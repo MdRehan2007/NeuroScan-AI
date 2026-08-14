@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NeuroScan AI | Brain Tumor MRI Classification</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}" />
+</head>
+<body>
+  <div class="page">
+    <header class="site-header">
+      <div class="brand">
+        <div class="brand-mark">NS</div>
+        <div>
+          <h1>NeuroScan AI</h1>
+          <p>AI Model for Brain Tumor MRI Classification</p>
+        </div>
+      </div>
+      <a class="nav-link" href="{{ url_for('history') }}">View Prediction History &rarr;</a>
+    </header>
+
+    {% if not model_ready %}
+    <div class="warning-box">
+      <strong>Model not loaded.</strong>
+      {{ model_error }}
+    </div>
+    {% endif %}
+
+    <section class="panel intro">
+      <h2>About this tool</h2>
+      <p>
+        This is Only For Educational Purposes.
+      </p>
+    </section>
+
+    <section class="panel">
+      <h2>Upload MRI Image</h2>
+
+      <div class="upload-box" id="upload-box">
+        <input type="file" id="file-input" accept=".jpg,.jpeg,.png" />
+        <div class="upload-icon">🧠</div>
+        <div class="upload-title">Click to upload or drag & drop</div>
+        <div class="upload-sub">JPG, JPEG or PNG &middot; max 10&nbsp;MB</div>
+
+        <div id="preview-wrap">
+          <img id="preview-img" alt="MRI preview" />
+        </div>
+      </div>
+      <div id="file-name"></div>
+
+      <div class="actions">
+        <button class="btn btn-primary" id="predict-btn" disabled>Predict</button>
+        <button class="btn btn-secondary" id="reset-btn" type="button">Reset</button>
+      </div>
+
+      <div class="spinner" id="spinner">
+        <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+        Running inference&hellip;
+      </div>
+
+      <div class="error-box" id="error-box"></div>
+
+      <div id="result-card">
+        <hr style="border-color: var(--panel-border); margin: 24px 0;" />
+        <div class="result-label">Prediction Result</div>
+        <div class="result-class" id="result-class">&mdash;</div>
+
+        <div class="confidence-row">
+          <span>Confidence</span>
+          <span id="confidence-value">0%</span>
+        </div>
+        <div class="confidence-track">
+          <div class="confidence-fill" id="confidence-fill"></div>
+        </div>
+      </div>
+    </section>
+
+    <p class="disclaimer">
+      © 2026 NeuroScan AI
+    </p>
+    <p class="disclaimer">Developed by Mohammad Rehan</p>
+  </div>
+
+  <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>

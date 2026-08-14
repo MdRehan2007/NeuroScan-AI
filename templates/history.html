@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CSCAN | Prediction History</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}" />
+</head>
+<body>
+  <div class="page">
+    <header class="site-header">
+      <div class="brand">
+        <div class="brand-mark">CS</div>
+        <div>
+          <h1>Prediction History</h1>
+          <p>Log of previous CSCAN MRI classifications</p>
+        </div>
+      </div>
+      <a class="nav-link" href="{{ url_for('index') }}">&larr; Back to Prediction Page</a>
+    </header>
+
+    <section class="panel">
+      {% if records|length == 0 %}
+      <div class="empty-state">
+        No predictions yet. Go back and classify an MRI image to see it logged here.
+      </div>
+      {% else %}
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Filename</th>
+              <th>Predicted Class</th>
+              <th>Confidence</th>
+              <th>Date / Time</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for row in records %}
+            <tr>
+              <td>{{ row["id"] }}</td>
+              <td>{{ row["filename"] }}</td>
+              <td>
+                <span class="badge {{ 'notumor' if row['prediction'] == 'No Tumor' else '' }}">
+                  {{ row["prediction"] }}
+                </span>
+              </td>
+              <td>{{ "%.2f"|format(row["confidence"]) }}%</td>
+              <td>{{ row["created_at"] }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% endif %}
+    </section>
+
+    <p class="disclaimer">
+      This system is developed for research and educational purposes and is not intended
+      to provide clinical diagnosis.
+    </p>
+  </div>
+</body>
+</html>
