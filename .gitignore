@@ -1,8 +1,12 @@
 ﻿venv/
 __pycache__/
 *.pyc
+
+*.pth
+*.pt
+*.ckpt
+
+.env
+
 database.db
 static/uploads/*
-!static/uploads/.gitkeep
-*.pth
-.env
