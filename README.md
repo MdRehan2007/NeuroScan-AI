@@ -22,7 +22,7 @@ Brain tumor diagnosis from MRI usually depends on a radiologist visually disting
 - **Swin-Tiny** extracts global, context-level features (spatial relationships across the whole scan).
 - The two feature streams are fused, refined, and classified through several purpose-built modules described below.
 
-##Key components
+**##Key components**
 
 Module	File	Purpose
 ConvNeXtTinyPretrained / SwinTinyPretrained	models/pretrained_backbones.py	ImageNet-pretrained backbones
