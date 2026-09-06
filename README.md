@@ -5,7 +5,7 @@ A deep learning pipeline that classifies brain MRI scans into four categories �
 The model achieves **95.75% test accuracy** on the Nickparvar Brain Tumor MRI dataset. Grad-CAM visualizations are included to improve model interpretability and visualize the regions influencing predictions.
 
 <h1 align="center">CSCAN-DCRF: Brain Tumor MRI Classification</h1>
-
+## Architecture
 <p align="center">
   <img 
     width="100%" 
@@ -22,36 +22,7 @@ Brain tumor diagnosis from MRI usually depends on a radiologist visually disting
 - **Swin-Tiny** extracts global, context-level features (spatial relationships across the whole scan).
 - The two feature streams are fused, refined, and classified through several purpose-built modules described below.
 
-## Architecture
-
-```text
-Input MRI (3 x 224 x 224)
-        │
-        ├── ConvNeXt-Tiny (local features)  ──────┐
-        │                                          │
-        └── Swin-Tiny (global features)  ──────────┤
-                                                   ▼
-                              Adaptive Weighted Fusion (AWF)
-                        per-channel gated blend of both feature maps
-                                                   │
-                                                   ▼
-                           Cross-Attention Fusion (Pre-LayerNorm)
-                      ConvNeXt = Query, Swin = Key/Value
-                                                   │
-                                                   ▼
-                Discriminative Confidence Refinement Fusion (DCRF)
-             margin-confidence-guided spatial refinement of ambiguous regions
-                                                   │
-                                                   ▼
-                              GeM Pooling (p = 3.0, learnable)
-                                                   │
-                                                   ▼
-                         LayerNorm → MLP Head (GELU, Dropout)
-                                                   │
-                                                   ▼
-                    Logits (glioma / meningioma / pituitary / notumor)
-
-Key components
+##Key components
 
 Module	File	Purpose
 ConvNeXtTinyPretrained / SwinTinyPretrained	models/pretrained_backbones.py	ImageNet-pretrained backbones
@@ -70,7 +41,7 @@ Recall (weighted)	95.75%
 F1-score (weighted)	95.68%
 Test loss	0.2205
 
-Per-class performance
+##Per-class performance
 
 Class	Precision	Recall	F1-score
 Glioma	1.00	0.84	0.91
