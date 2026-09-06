@@ -3,7 +3,17 @@
 
 A deep learning pipeline that classifies brain MRI scans into four categories — **glioma**, **meningioma**, **pituitary tumor**, and **no tumor** — using a dual-backbone hybrid network that fuses **ConvNeXt** (local/texture features) and a **Swin Transformer** (global/contextual features) through a custom cross-attention and confidence-refinement pipeline.
 
+## Overview
+
+Brain tumor diagnosis from MRI usually depends on a radiologist visually distinguishing tumor types by both fine-grained texture (edges, boundaries) and broader spatial/anatomical context. This project mirrors that dual perspective architecturally:
+
+- **ConvNeXt-Tiny** extracts local, texture-level features (tumor borders, tissue detail).
+- **Swin-Tiny** extracts global, context-level features (spatial relationships across the whole scan).
+- The two feature streams are fused, refined, and classified through several purpose-built modules described below.
+
 The model achieves **95.75% test accuracy** on the Nickparvar Brain Tumor MRI dataset.Grad-CAM visualizations are included to improve model interpretability and visualize the regions influencing predictions.
+
+## Architecture 
 
 <h1 align="center">Proposed Architecture </h1>
 
@@ -15,23 +25,6 @@ The model achieves **95.75% test accuracy** on the Nickparvar Brain Tumor MRI da
   />
 </p>
 
-## Overview
-
-Brain tumor diagnosis from MRI usually depends on a radiologist visually distinguishing tumor types by both fine-grained texture (edges, boundaries) and broader spatial/anatomical context. This project mirrors that dual perspective architecturally:
-
-- **ConvNeXt-Tiny** extracts local, texture-level features (tumor borders, tissue detail).
-- **Swin-Tiny** extracts global, context-level features (spatial relationships across the whole scan).
-- The two feature streams are fused, refined, and classified through several purpose-built modules described below.
-
-**Key components**
-
-| Module | File | Purpose |
-|---|---|---|
-| `ConvNeXtTinyPretrained` / `SwinTinyPretrained` | `models/pretrained_backbones.py` | ImageNet-pretrained backbones (drop-in replacements for the from-scratch versions in `models/convnext.py` / `models/swin_transformer.py`) |
-| `AdaptiveWeightedFusion` | `models/cscan.py` | Learns a per-channel gate `α` to blend ConvNeXt and Swin features: `F = α·F_conv + (1-α)·F_swin` |
-| `CrossAttentionFusion` | `models/cross_attention.py` | Multi-head cross-attention where ConvNeXt features query the Swin feature map for global context |
-| `DiscriminativeConfidenceRefinementFusion` (DCRF) | `models/dcrf.py` | Estimates per-pixel class-margin confidence and refines low-confidence (ambiguous) regions with a depthwise 3×3 convolution over local context |
-| `CSCANClassifier` | `models/classifier.py` | GeM pooling (learnable exponent) → LayerNorm → 2-layer MLP head |
 
 ## Dataset
 The model is trained and evaluated using the Brain Tumor MRI Dataset from Kaggle.
