@@ -110,15 +110,11 @@ Requires Python 3.9+ and PyTorch 2.5.1 (CUDA optional but recommended — see [H
 python train.py
 ```
 
-On first run this downloads ImageNet-pretrained weights for ConvNeXt-Tiny and Swin-Tiny (internet access required). The best checkpoint (by validation accuracy) is saved to `results/best_cscan_model.pth`.
-
-**2. Evaluate on the test set**
+**2. Test the Model**
 
 ```bash
 python test.py
 ```
-
-Outputs a classification report, confusion matrix, and a metrics CSV to `results/`.
 
 **3. Generate Grad-CAM visualizations**
 
@@ -126,7 +122,7 @@ Outputs a classification report, confusion matrix, and a metrics CSV to `results
 python grad_cam.py
 ```
 
-**4. Sanity-check the pipeline** (verifies shapes, gradients, and weight updates on a real batch)
+**4. Verify the Model** 
 
 ```bash
 python verify_cscan.py
