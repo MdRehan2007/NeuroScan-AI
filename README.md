@@ -38,14 +38,11 @@ The model is trained and evaluated using the Brain Tumor MRI Dataset from Kaggle
 
 [Brain Tumor MRI Dataset](https://www.kaggle.com/datasets/masoudnickparvar/brain-tumor-mri-dataset) by Masoud Nickparvar (Kaggle), combining images from three source datasets (figshare, SARTAJ, Br35H).
 
-Brain Tumor MRI Dataset – Kaggle
-
 The dataset contains 4 classes:
-
-Glioma
-Meningioma
-Pituitary
-No Tumor
+->Glioma
+->Meningioma
+->Pituitary
+->No Tumor
 ### Dataset Structure
 ```
 dataset/
