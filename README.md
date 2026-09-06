@@ -165,12 +165,19 @@ Default `BATCH_SIZE = 16` was chosen to fit a 4GB VRAM GPU (developed/tested on 
 ### Download Trained Model
 The trained model is required to run the web application and make predictions.
 
-Download the trained model from the link below:
-[Download `best_cscan_model.pth`](https://drive.google.com/file/d/17Yz5HgwT6E5BIr3UZmfkzhoxUP-8Fnwa/view?usp=drive_link)
-
+Download the trained model from the link :(https://drive.google.com/file/d/17Yz5HgwT6E5BIr3UZmfkzhoxUP-8Fnwa/view?usp=drive_link)
 After downloading, place the file inside the `CSCAN_WebApp` folder:
+CSCAN_WebApp/
+└── best_cscan_model.pth
+Important: Do not rename the file. The application expects the model to be named best_cscan_model.pth
+Run Web Application
 
+Open a terminal inside the CSCAN_WebApp folder and run: 
+python app.py
+Then open the following address in your browser:
+http://127.0.0.1:5000
 
+Upload a brain MRI image to get the predicted class.
 ## Results
 ### Quantitative 
 Evaluated on the held-out test set (1,600 images, 400 per class), with Test-Time Augmentation (horizontal-flip averaging) enabled:
