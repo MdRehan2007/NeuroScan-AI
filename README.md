@@ -23,36 +23,6 @@ Brain tumor diagnosis from MRI usually depends on a radiologist visually disting
 - **Swin-Tiny** extracts global, context-level features (spatial relationships across the whole scan).
 - The two feature streams are fused, refined, and classified through several purpose-built modules described below.
 
-## Architecture
-
-```
-Input MRI (3 x 224 x 224)
-        │
-        ├── ConvNeXt-Tiny (local features)  ──────┐
-        │                                          │
-        └── Swin-Tiny (global features)  ──────────┤
-                                                    ▼
-                              Adaptive Weighted Fusion (AWF)
-                        per-channel gated blend of both feature maps
-                                                    │
-                                                    ▼
-                          Cross-Attention Fusion (Pre-LayerNorm)
-                     ConvNeXt = Query, Swin = Key/Value
-                                                    │
-                                                    ▼
-                Discriminative Confidence Refinement Fusion (DCRF)
-             margin-confidence-guided spatial refinement of ambiguous regions
-                                                    │
-                                                    ▼
-                      GeM Pooling (p = 3.0, learnable)
-                                                    │
-                                                    ▼
-                     LayerNorm → MLP Head (GELU, Dropout)
-                                                    │
-                                                    ▼
-                        Logits (glioma / meningioma / pituitary / notumor)
-```
-
 **Key components**
 
 | Module | File | Purpose |
