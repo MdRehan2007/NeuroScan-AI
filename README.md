@@ -170,6 +170,7 @@ After downloading, place the file inside the `CSCAN_WebApp` folder:
 
 '''text
 CSCAN_WebApp/
+
 └── best_cscan_model.pth
 
 Important: Do not rename the file. The application expects the model to be named best_cscan_model.pth
