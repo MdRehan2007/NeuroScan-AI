@@ -33,44 +33,6 @@ Brain tumor diagnosis from MRI usually depends on a radiologist visually disting
 | `DiscriminativeConfidenceRefinementFusion` (DCRF) | `models/dcrf.py` | Estimates per-pixel class-margin confidence and refines low-confidence (ambiguous) regions with a depthwise 3×3 convolution over local context |
 | `CSCANClassifier` | `models/classifier.py` | GeM pooling (learnable exponent) → LayerNorm → 2-layer MLP head |
 
-## Results
-
-Evaluated on the held-out test set (1,600 images, 400 per class), with Test-Time Augmentation (horizontal-flip averaging) enabled:
-
-| Metric | Score |
-|---|---|
-| Accuracy | **95.75%** |
-| Precision (weighted) | 96.13% |
-| Recall (weighted) | 95.75% |
-| F1-score (weighted) | 95.68% |
-| Test loss | 0.2205 |
-
-**Per-class performance**
-
-| Class | Precision | Recall | F1-score |
-|---|---|---|---|
-| Glioma | 1.00 | 0.84 | 0.91 |
-| Meningioma | 0.88 | 0.99 | 0.94 |
-| Pituitary | 0.99 | 1.00 | 1.00 |
-| No tumor | 0.97 | 1.00 | 0.98 |
-
-Glioma is the hardest class to recognize (recall 0.84) and is most often confused with meningioma — visible in the confusion matrix below. This is a known, Glioma is the hardest class to recognize (recall 0.84) and is most often confused with meningioma, as visible in the confusion matrix below.
-<p align="center">
-  <img 
-    src="https://github.com/user-attachments/assets/4c85d52a-83a7-4b2c-a7c1-635e86bc9e06"
-    width="48%"
-    alt="Training and Validation Accuracy Curve"
-  />
-  <img 
-    src="https://github.com/user-attachments/assets/580e7f96-5df2-4af8-97d4-2cf0d8766217"
-    width="48%"
-    alt="Training and Validation Loss Curve"
-  />
-</p>
-
-
-> **A note on this number.** The dataset used here is known to contain near-duplicate slices leaking between its official Train/Test split (adjacent slices from the same patient scan can look almost identical), which is why some public notebooks on this dataset report 99%+ accuracy. Before citing this result in a report or paper, consider running a perceptual-hash duplicate check between Train/Test, or reporting stratified k-fold cross-validation accuracy as a more defensible number. See [`IMPROVEMENTS.md`](IMPROVEMENTS.md) for the full discussion.
-
 ## Dataset
 
 [Brain Tumor MRI Dataset](https://www.kaggle.com/datasets/masoudnickparvar/brain-tumor-mri-dataset) by Masoud Nickparvar (Kaggle), combining images from three source datasets (figshare, SARTAJ, Br35H).
@@ -198,8 +160,45 @@ To reproduce the original from-scratch (non-pretrained) configuration for compar
 
 Default `BATCH_SIZE = 16` was chosen to fit a 4GB VRAM GPU (developed/tested on an RTX 2050). Increase it if you have more VRAM available. Training will fall back to CPU automatically if no CUDA device is found, but this will be considerably slower.
 
-## Explainability
+## Results
+### Quantitative 
+Evaluated on the held-out test set (1,600 images, 400 per class), with Test-Time Augmentation (horizontal-flip averaging) enabled:
 
+| Metric | Score |
+|---|---|
+| Accuracy | **95.75%** |
+| Precision (weighted) | 96.13% |
+| Recall (weighted) | 95.75% |
+| F1-score (weighted) | 95.68% |
+| Test loss | 0.2205 |
+
+**Per-class performance**
+
+| Class | Precision | Recall | F1-score |
+|---|---|---|---|
+| Glioma | 1.00 | 0.84 | 0.91 |
+| Meningioma | 0.88 | 0.99 | 0.94 |
+| Pituitary | 0.99 | 1.00 | 1.00 |
+| No tumor | 0.97 | 1.00 | 0.98 |
+
+Glioma is the hardest class to recognize (recall 0.84) and is most often confused with meningioma — visible in the confusion matrix below. This is a known, Glioma is the hardest class to recognize (recall 0.84) and is most often confused with meningioma, as visible in the confusion matrix below.
+<p align="center">
+  <img 
+    src="https://github.com/user-attachments/assets/4c85d52a-83a7-4b2c-a7c1-635e86bc9e06"
+    width="48%"
+    alt="Training and Validation Accuracy Curve"
+  />
+  <img 
+    src="https://github.com/user-attachments/assets/580e7f96-5df2-4af8-97d4-2cf0d8766217"
+    width="48%"
+    alt="Training and Validation Loss Curve"
+  />
+</p>
+
+
+> **A note on this number.** The dataset used here is known to contain near-duplicate slices leaking between its official Train/Test split (adjacent slices from the same patient scan can look almost identical), which is why some public notebooks on this dataset report 99%+ accuracy. Before citing this result in a report or paper, consider running a perceptual-hash duplicate check between Train/Test, or reporting stratified k-fold cross-validation accuracy as a more defensible number. See [`IMPROVEMENTS.md`](IMPROVEMENTS.md) for the full discussion.
+
+### Qualitative
 grad_cam.py produces Grad-CAM overlays using the final ConvNeXt feature map as the target layer.
 The same target layer is used across all four classes for methodological consistency.
 <h3 align="center">Grad-CAM Visualization Results</h3>
