@@ -160,6 +160,66 @@ To reproduce the original from-scratch (non-pretrained) configuration for compar
 
 Default `BATCH_SIZE = 16` was chosen to fit a 4GB VRAM GPU (developed/tested on an RTX 2050). Increase it if you have more VRAM available. Training will fall back to CPU automatically if no CUDA device is found, but this will be considerably slower.
 
+## Web Application
+
+### Download Trained Model
+
+The trained model is required to run the web application and make predictions.
+
+Download the trained model from the link below:
+
+[Download `best_cscan_model.pth`](YOUR_MODEL_DOWNLOAD_LINK_HERE)
+
+After downloading, place the file inside the `CSCAN_WebApp` folder:
+
+```text
+CSCAN_WebApp/
+└── best_cscan_model.pth
+
+Important: Do not rename the file. The application expects the model to be named best_cscan_model.pth.
+
+Run Web Application
+
+Open a terminal inside the CSCAN_WebApp folder and run:
+
+python app.py
+
+After the server starts, open this address in your browser:
+
+http://127.0.0.1:5000
+
+Upload a brain MRI image to get the model's predicted class.
+
+
+This is much clearer for someone who downloads your GitHub project **for the first time**.
+### Download Trained Model
+
+The trained model is required to run the web application and make predictions.
+
+Download the trained model from the link below:
+
+[Download `best_cscan_model.pth`]- https://drive.google.com/file/d/17Yz5HgwT6E5BIr3UZmfkzhoxUP-8Fnwa/view?usp=drive_link
+
+After downloading, place the file inside the `CSCAN_WebApp` folder:
+
+```text
+CSCAN_WebApp/
+└── best_cscan_model.pth
+
+Important: Do not rename the file. The application expects the model to be named best_cscan_model.pth.
+
+Run Web Application
+
+Open a terminal inside the CSCAN_WebApp folder and run:
+
+python app.py
+
+After the server starts, open this address in your browser:
+
+http://127.0.0.1:5000
+
+Upload a brain MRI image to get the model's predicted class.
+
 ## Results
 ### Quantitative 
 Evaluated on the held-out test set (1,600 images, 400 per class), with Test-Time Augmentation (horizontal-flip averaging) enabled:
@@ -194,9 +254,6 @@ Glioma is the hardest class to recognize (recall 0.84) and is most often confuse
     alt="Training and Validation Loss Curve"
   />
 </p>
-
-
-> **A note on this number.** The dataset used here is known to contain near-duplicate slices leaking between its official Train/Test split (adjacent slices from the same patient scan can look almost identical), which is why some public notebooks on this dataset report 99%+ accuracy. Before citing this result in a report or paper, consider running a perceptual-hash duplicate check between Train/Test, or reporting stratified k-fold cross-validation accuracy as a more defensible number. See [`IMPROVEMENTS.md`](IMPROVEMENTS.md) for the full discussion.
 
 ### Qualitative
 grad_cam.py produces Grad-CAM overlays using the final ConvNeXt feature map as the target layer.
