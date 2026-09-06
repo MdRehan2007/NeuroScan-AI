@@ -34,13 +34,19 @@ Brain tumor diagnosis from MRI usually depends on a radiologist visually disting
 | `CSCANClassifier` | `models/classifier.py` | GeM pooling (learnable exponent) → LayerNorm → 2-layer MLP head |
 
 ## Dataset
+The model is trained and evaluated using the Brain Tumor MRI Dataset from Kaggle.
 
 [Brain Tumor MRI Dataset](https://www.kaggle.com/datasets/masoudnickparvar/brain-tumor-mri-dataset) by Masoud Nickparvar (Kaggle), combining images from three source datasets (figshare, SARTAJ, Br35H).
 
-- **Classes:** glioma, meningioma, pituitary, notumor
-- **Split used:** ~4,000 training images / 1,600 test images (400 per class in the test set)
-- The dataset is **not included** in this repository. Download it from Kaggle and place it as:
+Brain Tumor MRI Dataset – Kaggle
 
+The dataset contains 4 classes:
+
+Glioma
+Meningioma
+Pituitary
+No Tumor
+### Dataset Structure
 ```
 dataset/
 ├── Train/
@@ -102,7 +108,9 @@ pip install -r requirements.txt
 Requirements:
 
 Python 3.9 or above
+
 PyTorch 2.5.1
+
 CUDA-enabled GPU is recommended but not required.
 
 Requires Python 3.9+ and PyTorch 2.5.1 (CUDA optional but recommended — see [Hardware notes](#hardware-notes)).
