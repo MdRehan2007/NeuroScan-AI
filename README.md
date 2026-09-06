@@ -5,7 +5,7 @@ A deep learning pipeline that classifies brain MRI scans into four categories â€
 
 The model achieves **95.75% test accuracy** on the Nickparvar Brain Tumor MRI dataset.Grad-CAM visualizations are included to improve model interpretability and visualize the regions influencing predictions.
 
-<h1 align="center">CSCAN-DCRF: Brain Tumor MRI Classification</h1>
+<h1 align="center">Proposed Architecture </h1>
 
 <p align="center">
   <img 
