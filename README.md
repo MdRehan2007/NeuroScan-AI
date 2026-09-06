@@ -197,19 +197,6 @@ To reproduce the original from-scratch (non-pretrained) configuration for compar
 ## Hardware Notes
 
 Default `BATCH_SIZE = 16` was chosen to fit a 4GB VRAM GPU (developed/tested on an RTX 2050). Increase it if you have more VRAM available. Training will fall back to CPU automatically if no CUDA device is found, but this will be considerably slower.
-**Reproducibility**
-To reproduce the experiments:
-
-Download the Brain Tumor MRI Dataset from Kaggle.
-Arrange the dataset according to the structure given above.
-Install the required dependencies.
-Set PRETRAINED = True in utils/config.py.
-Run the training script:
-python train.py
-Evaluate the trained model:
-python test.py
-Generate Grad-CAM visualizations:
-python grad_cam.py
 
 ## Explainability
 
