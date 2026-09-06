@@ -93,12 +93,17 @@ dataset/
 ```
 
 ## Installation
-
+Clone the repository and install the required dependencies:
 ```bash
-git clone <this-repo-url>
-cd <this-repo>
+git clone https://github.com/MdRehan2007/Brain-Tumor-Detection-Using-DL.git
+cd Brain-Tumor-Detection-Using-DL
 pip install -r requirements.txt
 ```
+Requirements:
+
+Python 3.9 or above
+PyTorch 2.5.1
+CUDA-enabled GPU is recommended but not required.
 
 Requires Python 3.9+ and PyTorch 2.5.1 (CUDA optional but recommended — see [Hardware notes](#hardware-notes)).
 
