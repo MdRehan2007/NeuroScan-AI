@@ -163,62 +163,13 @@ Default `BATCH_SIZE = 16` was chosen to fit a 4GB VRAM GPU (developed/tested on 
 ## Web Application
 
 ### Download Trained Model
-
 The trained model is required to run the web application and make predictions.
 
 Download the trained model from the link below:
-
-[Download `best_cscan_model.pth`](YOUR_MODEL_DOWNLOAD_LINK_HERE)
-
-After downloading, place the file inside the `CSCAN_WebApp` folder:
-
-```text
-CSCAN_WebApp/
-└── best_cscan_model.pth
-
-Important: Do not rename the file. The application expects the model to be named best_cscan_model.pth.
-
-Run Web Application
-
-Open a terminal inside the CSCAN_WebApp folder and run:
-
-python app.py
-
-After the server starts, open this address in your browser:
-
-http://127.0.0.1:5000
-
-Upload a brain MRI image to get the model's predicted class.
-
-
-This is much clearer for someone who downloads your GitHub project **for the first time**.
-### Download Trained Model
-
-The trained model is required to run the web application and make predictions.
-
-Download the trained model from the link below:
-
-[Download `best_cscan_model.pth`]- https://drive.google.com/file/d/17Yz5HgwT6E5BIr3UZmfkzhoxUP-8Fnwa/view?usp=drive_link
+[Download `best_cscan_model.pth`](https://drive.google.com/file/d/17Yz5HgwT6E5BIr3UZmfkzhoxUP-8Fnwa/view?usp=drive_link)
 
 After downloading, place the file inside the `CSCAN_WebApp` folder:
 
-```text
-CSCAN_WebApp/
-└── best_cscan_model.pth
-
-Important: Do not rename the file. The application expects the model to be named best_cscan_model.pth.
-
-Run Web Application
-
-Open a terminal inside the CSCAN_WebApp folder and run:
-
-python app.py
-
-After the server starts, open this address in your browser:
-
-http://127.0.0.1:5000
-
-Upload a brain MRI image to get the model's predicted class.
 
 ## Results
 ### Quantitative 
