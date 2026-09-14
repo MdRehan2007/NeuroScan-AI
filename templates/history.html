@@ -5,6 +5,287 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>CSCAN | Prediction History</title>
   <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    /* ================= Sky Blue & White Professional Theme ================= */
+
+    :root {
+      /* Backgrounds */
+      --ns-bg: #f0f9ff;         
+      --ns-bg-alt: #ffffff;     
+      
+      /* Brand Colors */
+      --ns-primary: #0284c7;    
+      --ns-primary-2: #0ea5e9;  
+      --ns-accent: #38bdf8;     
+      
+      /* Typography */
+      --ns-text: #0f172a;       
+      --ns-text-light: #ffffff; 
+      --ns-muted: #64748b;      
+      
+      /* UI Elements */
+      --ns-card: #ffffff;
+      --ns-border: #bae6fd;     
+      --ns-shadow-light: rgba(14, 165, 233, 0.15);
+      --ns-shadow-strong: rgba(2, 132, 199, 0.25);
+    }
+
+    * {
+      font-family: 'Inter', sans-serif;
+      box-sizing: border-box;
+    }
+
+    body {
+      background: linear-gradient(135deg, var(--ns-bg) 0%, var(--ns-bg-alt) 100%) !important;
+      color: var(--ns-text) !important;
+      background-attachment: fixed;
+      min-height: 100vh;
+      overflow-x: hidden;
+      margin: 0;
+      padding: 0;
+    }
+
+    /* --- Animations --- */
+    @keyframes fadeSlideUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes floatPulse {
+      0%, 100% { transform: translateY(0) scale(1); }
+      50%      { transform: translateY(-5px) scale(1.05); }
+    }
+    @keyframes drift {
+      0%   { transform: translate(0, 0); }
+      50%  { transform: translate(15px, -15px); }
+      100% { transform: translate(0, 0); }
+    }
+
+    .page {
+      animation: fadeSlideUp 0.6s ease both;
+      position: relative;
+      z-index: 1;
+      max-width: 1000px;
+      margin: 2rem auto;
+      padding: 0 1rem;
+    }
+
+    /* Soft floating atmospheric blobs */
+    .page::before,
+    .page::after {
+      content: "";
+      position: fixed;
+      width: 450px;
+      height: 450px;
+      border-radius: 50%;
+      filter: blur(100px);
+      opacity: 0.4;
+      z-index: -1;
+      pointer-events: none;
+    }
+    .page::before {
+      background: var(--ns-primary-2);
+      top: -100px;
+      left: -150px;
+      animation: drift 12s ease-in-out infinite;
+    }
+    .page::after {
+      background: var(--ns-accent);
+      bottom: -150px;
+      right: -100px;
+      animation: drift 15s ease-in-out infinite reverse;
+    }
+
+    /* Header */
+    .site-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1.25rem 1.5rem;
+      margin-bottom: 2rem;
+      border-radius: 16px;
+      background: var(--ns-card) !important;
+      border: 1px solid var(--ns-border) !important;
+      box-shadow: 0 10px 30px var(--ns-shadow-light);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    .site-header:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 15px 35px var(--ns-shadow-strong);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+    .brand h1 { 
+      margin: 0;
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--ns-primary) !important;
+    }
+    .brand p { 
+      margin: 0;
+      font-size: 0.85rem;
+      color: var(--ns-muted) !important;
+      font-weight: 500;
+    }
+
+    .brand-mark {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 48px;
+      height: 48px;
+      border-radius: 12px;
+      font-weight: 700;
+      font-size: 1.1rem;
+      background: linear-gradient(135deg, var(--ns-primary), var(--ns-primary-2)) !important;
+      color: var(--ns-text-light) !important;
+      animation: floatPulse 4s ease-in-out infinite;
+      box-shadow: 0 8px 16px var(--ns-shadow-light);
+    }
+
+    .nav-link {
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 0.95rem;
+      color: var(--ns-primary) !important;
+      transition: color 0.2s ease;
+      position: relative;
+    }
+    .nav-link::after {
+      content: "";
+      position: absolute;
+      left: 0; 
+      bottom: -4px;
+      width: 0; 
+      height: 2px;
+      background: var(--ns-primary-2);
+      transition: width 0.3s ease;
+    }
+    .nav-link:hover { color: var(--ns-primary-2) !important; }
+    .nav-link:hover::after { width: 100%; }
+
+    /* Panels */
+    .panel {
+      background: var(--ns-card) !important;
+      border: 1px solid var(--ns-border) !important;
+      padding: 2rem;
+      margin-bottom: 1.5rem;
+      border-radius: 16px;
+      box-shadow: 0 8px 24px var(--ns-shadow-light);
+      animation: fadeSlideUp 0.6s ease both;
+      transition: transform 0.3s ease, border-color 0.3s ease;
+    }
+    .panel:hover {
+      border-color: var(--ns-primary-2) !important;
+    }
+
+    /* Empty State */
+    .empty-state {
+      text-align: center;
+      padding: 3rem 1rem;
+      color: var(--ns-muted);
+      font-weight: 500;
+      background: #f8fafc;
+      border: 2px dashed var(--ns-border);
+      border-radius: 12px;
+    }
+
+    /* Table Styling */
+    .table-wrap {
+      overflow-x: auto;
+      border-radius: 8px;
+    }
+    
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+    }
+    
+    th, td {
+      padding: 1rem 1.25rem;
+      border-bottom: 1px solid #e2e8f0;
+      white-space: nowrap;
+    }
+    
+    th {
+      background-color: #f8fafc;
+      color: var(--ns-muted);
+      font-weight: 600;
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    
+    td {
+      font-size: 0.95rem;
+      color: var(--ns-text);
+      font-weight: 500;
+    }
+    
+    tr:last-child td {
+      border-bottom: none;
+    }
+    
+    tr:hover td {
+      background-color: #f0f9ff;
+    }
+
+    /* Badges for Prediction Results */
+    .badge {
+      display: inline-block;
+      padding: 0.35rem 0.75rem;
+      border-radius: 999px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      background: #fef2f2; /* Soft red for Tumor */
+      color: #ef4444;
+      border: 1px solid #fecaca;
+    }
+    .badge.notumor {
+      background: #ecfdf5; /* Soft green for No Tumor */
+      color: #10b981;
+      border: 1px solid #a7f3d0;
+    }
+
+    /* Footer / Disclaimer */
+    .disclaimer {
+      text-align: center;
+      color: var(--ns-muted) !important;
+      font-size: 0.85rem;
+      font-weight: 500;
+      opacity: 0.7;
+      margin: 1.5rem 0;
+      transition: opacity 0.3s ease;
+    }
+    .disclaimer:hover { opacity: 1; }
+
+    /* ---- Responsiveness ---- */
+    @media (max-width: 640px) {
+      .site-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 15px;
+        padding: 1.25rem;
+      }
+      .brand h1 { font-size: 1.25rem; }
+      .nav-link { align-self: flex-start; }
+      .panel { padding: 1.5rem 1rem; }
+      th, td { padding: 0.75rem 1rem; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.001ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.001ms !important;
+      }
+    }
+  </style>
 </head>
 <body>
   <div class="page">
@@ -39,7 +320,7 @@
           <tbody>
             {% for row in records %}
             <tr>
-              <td>{{ row["id"] }}</td>
+              <td>#{{ row["id"] }}</td>
               <td>{{ row["filename"] }}</td>
               <td>
                 <span class="badge {{ 'notumor' if row['prediction'] == 'No Tumor' else '' }}">

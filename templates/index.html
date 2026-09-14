@@ -5,12 +5,469 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>NeuroScan AI | Brain Tumor MRI Classification</title>
   <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    /* ================= Sky Blue & White Professional Theme ================= */
+
+    :root {
+      /* Backgrounds */
+      --ns-bg: #f0f9ff;         /* Very light sky blue */
+      --ns-bg-alt: #ffffff;     /* Pure white */
+      
+      /* Brand Colors */
+      --ns-primary: #0284c7;    /* Deep sky blue */
+      --ns-primary-2: #0ea5e9;  /* Vibrant sky blue */
+      --ns-accent: #38bdf8;     /* Light sky blue */
+      --ns-success: #10b981;    /* Emerald green for success */
+      
+      /* Typography */
+      --ns-text: #0f172a;       /* Dark slate for high contrast/readability */
+      --ns-text-light: #ffffff; /* White text for buttons/badges */
+      --ns-muted: #64748b;      /* Muted gray-blue */
+      
+      /* UI Elements */
+      --ns-card: #ffffff;
+      --ns-border: #bae6fd;     /* Soft blue border */
+      --ns-shadow-light: rgba(14, 165, 233, 0.15);
+      --ns-shadow-strong: rgba(2, 132, 199, 0.25);
+    }
+
+    * {
+      font-family: 'Inter', sans-serif;
+      box-sizing: border-box;
+    }
+
+    body {
+      background: linear-gradient(135deg, var(--ns-bg) 0%, var(--ns-bg-alt) 100%) !important;
+      color: var(--ns-text) !important;
+      background-attachment: fixed;
+      min-height: 100vh;
+      overflow-x: hidden;
+      margin: 0;
+      padding: 0;
+    }
+
+    /* --- Animations --- */
+    @keyframes fadeSlideUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes floatPulse {
+      0%, 100% { transform: translateY(0) scale(1); }
+      50%      { transform: translateY(-5px) scale(1.05); }
+    }
+    @keyframes shimmer {
+      0%   { background-position: -400px 0; }
+      100% { background-position: 400px 0; }
+    }
+    @keyframes pulseShadow {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(14, 165, 233, 0.4); }
+      50%      { box-shadow: 0 0 0 12px rgba(14, 165, 233, 0); }
+    }
+    @keyframes drift {
+      0%   { transform: translate(0, 0); }
+      50%  { transform: translate(15px, -15px); }
+      100% { transform: translate(0, 0); }
+    }
+    @keyframes bounceIn {
+      0%   { opacity: 0; transform: scale(0.9); }
+      60%  { opacity: 1; transform: scale(1.02); }
+      100% { transform: scale(1); }
+    }
+
+    .page {
+      animation: fadeSlideUp 0.6s ease both;
+      position: relative;
+      z-index: 1;
+      max-width: 900px;
+      margin: 2rem auto;
+      padding: 0 1rem;
+    }
+
+    /* Soft floating atmospheric blobs */
+    .page::before,
+    .page::after {
+      content: "";
+      position: fixed;
+      width: 450px;
+      height: 450px;
+      border-radius: 50%;
+      filter: blur(100px);
+      opacity: 0.4;
+      z-index: -1;
+      pointer-events: none;
+    }
+    .page::before {
+      background: var(--ns-primary-2);
+      top: -100px;
+      left: -150px;
+      animation: drift 12s ease-in-out infinite;
+    }
+    .page::after {
+      background: var(--ns-accent);
+      bottom: -150px;
+      right: -100px;
+      animation: drift 15s ease-in-out infinite reverse;
+    }
+
+    /* Header */
+    .site-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1.25rem 1.5rem;
+      margin-bottom: 2rem;
+      border-radius: 16px;
+      background: var(--ns-card) !important;
+      border: 1px solid var(--ns-border) !important;
+      box-shadow: 0 10px 30px var(--ns-shadow-light);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    .site-header:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 15px 35px var(--ns-shadow-strong);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+    .brand h1 { 
+      margin: 0;
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--ns-primary) !important;
+    }
+    .brand p { 
+      margin: 0;
+      font-size: 0.85rem;
+      color: var(--ns-muted) !important;
+      font-weight: 500;
+    }
+
+    .brand-mark {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 48px;
+      height: 48px;
+      border-radius: 12px;
+      font-weight: 700;
+      font-size: 1.1rem;
+      background: linear-gradient(135deg, var(--ns-primary), var(--ns-primary-2)) !important;
+      color: var(--ns-text-light) !important;
+      animation: floatPulse 4s ease-in-out infinite;
+      box-shadow: 0 8px 16px var(--ns-shadow-light);
+    }
+
+    .nav-link {
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 0.95rem;
+      color: var(--ns-primary) !important;
+      transition: color 0.2s ease;
+      position: relative;
+    }
+    .nav-link::after {
+      content: "";
+      position: absolute;
+      left: 0; 
+      bottom: -4px;
+      width: 0; 
+      height: 2px;
+      background: var(--ns-primary-2);
+      transition: width 0.3s ease;
+    }
+    .nav-link:hover { color: var(--ns-primary-2) !important; }
+    .nav-link:hover::after { width: 100%; }
+
+    /* Panels */
+    .panel {
+      background: var(--ns-card) !important;
+      border: 1px solid var(--ns-border) !important;
+      padding: 2rem;
+      margin-bottom: 1.5rem;
+      border-radius: 16px;
+      box-shadow: 0 8px 24px var(--ns-shadow-light);
+      animation: fadeSlideUp 0.6s ease both;
+      transition: transform 0.3s ease, border-color 0.3s ease;
+    }
+    .panel:hover {
+      border-color: var(--ns-primary-2) !important;
+    }
+    .panel h2 { 
+      margin-top: 0;
+      color: var(--ns-text) !important; 
+      font-weight: 600;
+      font-size: 1.3rem;
+      border-bottom: 1px solid var(--ns-border);
+      padding-bottom: 0.75rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .intro p {
+      color: var(--ns-muted);
+      font-weight: 500;
+      margin: 0;
+    }
+
+    /* Upload Area */
+    .upload-box {
+      position: relative;
+      padding: 2.5rem 1rem;
+      text-align: center;
+      cursor: pointer;
+      border: 2px dashed var(--ns-primary-2) !important;
+      background: #f8fafc !important;
+      border-radius: 12px;
+      transition: all 0.3s ease;
+    }
+    .upload-box:hover {
+      background: #f0f9ff !important;
+      transform: translateY(-2px);
+      box-shadow: 0 10px 20px var(--ns-shadow-light);
+    }
+    .upload-box.dragover {
+      background: #e0f2fe !important;
+      border-color: var(--ns-primary) !important;
+      transform: scale(1.02);
+    }
+    .upload-box input[type="file"] {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      opacity: 0;
+      cursor: pointer;
+    }
+    .upload-icon {
+      font-size: 2.5rem;
+      display: inline-block;
+      margin-bottom: 0.5rem;
+      animation: floatPulse 3s ease-in-out infinite;
+    }
+    .upload-title { 
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: var(--ns-primary) !important; 
+    }
+    .upload-sub { 
+      font-size: 0.85rem;
+      margin-top: 0.5rem;
+      color: var(--ns-muted) !important; 
+    }
+
+    #preview-wrap {
+      margin-top: 1.5rem;
+      display: none; /* Handled by JS, assuming flex/block applied there */
+      justify-content: center;
+    }
+    #preview-wrap img,
+    #preview-img {
+      max-width: 100%;
+      max-height: 250px;
+      border-radius: 8px;
+      border: 1px solid var(--ns-border);
+      box-shadow: 0 4px 15px var(--ns-shadow-light);
+      transition: transform 0.3s ease;
+    }
+    #preview-img:hover {
+      transform: scale(1.02);
+    }
+    #file-name {
+      text-align: center;
+      margin-top: 10px;
+      font-size: 0.9rem;
+      font-weight: 500;
+      color: var(--ns-primary);
+    }
+
+    /* Buttons */
+    .actions {
+      display: flex;
+      gap: 15px;
+      margin-top: 1.5rem;
+    }
+    .btn {
+      flex: 1;
+      padding: 0.75rem 1.5rem;
+      font-size: 1rem;
+      font-weight: 600;
+      border-radius: 10px;
+      border: none !important;
+      cursor: pointer;
+      transition: all 0.25s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .btn-primary {
+      background: linear-gradient(135deg, var(--ns-primary), var(--ns-primary-2)) !important;
+      color: var(--ns-text-light) !important;
+      box-shadow: 0 4px 15px var(--ns-shadow-strong);
+    }
+    .btn-primary:not(:disabled) { 
+      animation: pulseShadow 2.5s infinite; 
+    }
+    .btn-secondary {
+      background: #ffffff !important;
+      color: var(--ns-primary) !important;
+      border: 1px solid var(--ns-border) !important;
+    }
+    .btn:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px var(--ns-shadow-strong);
+    }
+    .btn:active:not(:disabled) { 
+      transform: translateY(0) scale(0.98); 
+    }
+    .btn:disabled { 
+      opacity: 0.6; 
+      cursor: not-allowed;
+      animation: none;
+      box-shadow: none;
+    }
+
+    /* State Boxes & Spinner */
+    .spinner { 
+      display: none; /* Assuming JS toggles display */
+      text-align: center;
+      margin-top: 1.5rem;
+      font-weight: 500;
+      color: var(--ns-primary) !important; 
+    }
+    .spinner .dot {
+      display: inline-block;
+      width: 8px; height: 8px;
+      margin: 0 3px;
+      border-radius: 50%;
+      background: var(--ns-primary);
+      animation: floatPulse 0.9s ease-in-out infinite;
+    }
+    .spinner .dot:nth-child(2) { animation-delay: 0.15s; }
+    .spinner .dot:nth-child(3) { animation-delay: 0.3s; }
+
+    .error-box { display: none; }
+    .error-box:not(:empty) {
+      display: block;
+      margin-top: 1.5rem;
+      padding: 1rem;
+      border-radius: 10px;
+      background: #fef2f2 !important;
+      border: 1px solid #fecaca !important;
+      color: #ef4444 !important;
+      animation: fadeSlideUp 0.3s ease;
+      font-weight: 500;
+    }
+
+    .warning-box {
+      padding: 1rem 1.5rem;
+      margin-bottom: 1.5rem;
+      border-radius: 12px;
+      background: #fffbeb !important;
+      border: 1px solid #fde68a !important;
+      color: #d97706 !important;
+      animation: fadeSlideUp 0.4s ease both;
+    }
+
+    /* Results */
+    #result-card {
+      display: none; /* Assuming JS toggles it */
+      animation: bounceIn 0.5s ease both;
+      background: #f8fafc;
+      border: 1px solid var(--ns-border);
+      border-radius: 12px;
+      padding: 1.5rem;
+      margin-top: 1.5rem;
+    }
+    .result-label { 
+      font-size: 0.9rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--ns-muted) !important; 
+      margin-bottom: 0.5rem;
+    }
+    .result-class {
+      font-size: 1.75rem;
+      font-weight: 700;
+      color: var(--ns-primary) !important;
+      margin-bottom: 1rem;
+    }
+    
+    .confidence-row {
+      display: flex;
+      justify-content: space-between;
+      font-weight: 600;
+      color: var(--ns-text) !important;
+      margin-bottom: 0.5rem;
+      font-size: 0.95rem;
+    }
+    #confidence-value {
+      color: var(--ns-primary);
+    }
+    .confidence-track {
+      height: 10px;
+      background: #e2e8f0 !important;
+      border-radius: 999px;
+      overflow: hidden;
+    }
+    .confidence-fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, var(--ns-primary), var(--ns-accent)) !important;
+      border-radius: 999px;
+      transition: width 1s cubic-bezier(0.22, 1, 0.36, 1);
+      background-size: 200% 100%;
+      animation: shimmer 2s linear infinite;
+    }
+
+    /* Footer / Disclaimer */
+    .disclaimer {
+      text-align: center;
+      color: var(--ns-muted) !important;
+      font-size: 0.85rem;
+      font-weight: 500;
+      opacity: 0.7;
+      margin: 0.5rem 0;
+      transition: opacity 0.3s ease;
+    }
+    .disclaimer:hover { opacity: 1; }
+
+    /* ---- Responsiveness ---- */
+    @media (max-width: 640px) {
+      .site-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 15px;
+        padding: 1.25rem;
+      }
+      .brand h1 { font-size: 1.25rem; }
+      .nav-link { align-self: flex-start; }
+      .actions { flex-direction: column; }
+      .btn { width: 100%; }
+      .panel { padding: 1.5rem; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.001ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.001ms !important;
+      }
+    }
+  </style>
 </head>
 <body>
   <div class="page">
     <header class="site-header">
       <div class="brand">
-        <div class="brand-mark">NS</div>
+        <div class="brand-mark">
+  <img src="{{ url_for('static', filename='images/neuroscanaiLogo.png') }}"
+       alt="NeuroScan AI Logo"
+       style="width: 100%; height: 100%; object-fit: contain;" />
+</div>
         <div>
           <h1>NeuroScan AI</h1>
           <p>AI Model for Brain Tumor MRI Classification</p>
@@ -29,7 +486,7 @@
     <section class="panel intro">
       <h2>About this tool</h2>
       <p>
-        This is Only For Educational Purposes.
+        This is Only For Educational Purposes. Please consult a qualified medical professional for clinical diagnosis.
       </p>
     </section>
 
@@ -49,24 +506,23 @@
       <div id="file-name"></div>
 
       <div class="actions">
-        <button class="btn btn-primary" id="predict-btn" disabled>Predict</button>
+        <button class="btn btn-primary" id="predict-btn" disabled>Analyze Scan</button>
         <button class="btn btn-secondary" id="reset-btn" type="button">Reset</button>
       </div>
 
       <div class="spinner" id="spinner">
         <span class="dot"></span><span class="dot"></span><span class="dot"></span>
-        Running inference&hellip;
+        <br><br>Running neural network inference&hellip;
       </div>
 
       <div class="error-box" id="error-box"></div>
 
       <div id="result-card">
-        <hr style="border-color: var(--panel-border); margin: 24px 0;" />
-        <div class="result-label">Prediction Result</div>
+        <div class="result-label">Diagnostic Prediction</div>
         <div class="result-class" id="result-class">&mdash;</div>
 
         <div class="confidence-row">
-          <span>Confidence</span>
+          <span>Confidence Level</span>
           <span id="confidence-value">0%</span>
         </div>
         <div class="confidence-track">
@@ -75,9 +531,7 @@
       </div>
     </section>
 
-    <p class="disclaimer">
-      © 2026 NeuroScan AI
-    </p>
+    <p class="disclaimer">© 2026 NeuroScan AI</p>
     <p class="disclaimer">Developed by Mohammad Rehan</p>
   </div>
 

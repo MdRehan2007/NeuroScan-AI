@@ -37,7 +37,10 @@ DB_PATH = os.path.join(BASE_DIR, "database.db")
 
 # The trained checkpoint lives at the project root, per the required
 # project structure (CSCAN_WebApp/best_cscan_model.pth).
-MODEL_CHECKPOINT_PATH = os.path.join(BASE_DIR, "best_cscan_model.pth")
+MODEL_CHECKPOINT_PATH = os.path.join(
+    BASE_DIR,
+    "best_cscan_model_int8.pth"
+)
 
 ALLOWED_EXTENSIONS = {"jpg", "jpeg", "png"}
 MAX_CONTENT_LENGTH = 10 * 1024 * 1024  # 10 MB upload limit
@@ -147,15 +150,27 @@ def load_model():
             use_dcrf=CSCANConfig.USE_DCRF,
         )
 
-        checkpoint = torch.load(MODEL_CHECKPOINT_PATH, map_location=DEVICE)
-        # Support both a raw state_dict (what train.py/test.py save) and a
-        # checkpoint dict that wraps it under a common key, just in case.
+        checkpoint = torch.load(
+            MODEL_CHECKPOINT_PATH,
+            map_location="cpu"
+        )
+
         if isinstance(checkpoint, dict) and "state_dict" in checkpoint:
             state_dict = checkpoint["state_dict"]
         elif isinstance(checkpoint, dict) and "model_state_dict" in checkpoint:
             state_dict = checkpoint["model_state_dict"]
         else:
             state_dict = checkpoint
+
+        # Dequantize custom INT8 checkpoint
+        for key, value in list(state_dict.items()):
+            if isinstance(value, dict) and "data" in value and "scale" in value:
+                q_data = value["data"]
+                scale = value["scale"]
+
+                state_dict[key] = q_data.float() * scale
+
+        net.load_state_dict(state_dict)
 
         net.load_state_dict(state_dict)
         net.to(DEVICE)
