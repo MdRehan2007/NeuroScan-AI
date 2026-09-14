@@ -1,1 +1,8 @@
 3.12
+Flask
+torch
+torchvision
+Pillow
+numpy
+opencv-python-headless
+gunicorn
