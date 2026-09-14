@@ -1,0 +1,4 @@
+3.12
+git add .python-version
+git commit -m "Set Python version for deployment"
+git push origin main
