@@ -170,7 +170,7 @@ def load_model():
 
                 state_dict[key] = q_data.float() * scale
 
-        net.load_state_dict(state_dict)
+
 
         net.load_state_dict(state_dict)
         net.to(DEVICE)
@@ -180,10 +180,9 @@ def load_model():
         model_load_error = None
         print(f"[CSCAN] Model loaded successfully on device: {DEVICE}")
     except Exception as e:
-        MODEL_LOAD_ERROR = f"{type(e).__name__}: {str(e)}"
-        print("MODEL LOAD ERROR:", repr(e))
-        model = None
-        model_load_error = str(e)
+    model = None
+    model_load_error = f"{type(e).__name__}: {str(e)}"
+    print("MODEL LOAD ERROR:", repr(e))
         print(f"[CSCAN] ERROR loading model: {model_load_error}")
 
 
@@ -317,7 +316,8 @@ def history():
 # -----------------------------------------------------------------------
 # Entry point
 # -----------------------------------------------------------------------
+init_db()
+load_model()
+
 if __name__ == "__main__":
-    init_db()
-    load_model()
     app.run(debug=True, host="0.0.0.0", port=5000)
