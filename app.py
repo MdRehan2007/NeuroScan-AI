@@ -179,9 +179,11 @@ def load_model():
         model = net
         model_load_error = None
         print(f"[CSCAN] Model loaded successfully on device: {DEVICE}")
-    except Exception as exc:  # noqa: BLE001 - we want to surface any load error
+    except Exception as e:
+        MODEL_LOAD_ERROR = f"{type(e).__name__}: {str(e)}"
+        print("MODEL LOAD ERROR:", repr(e))
         model = None
-        model_load_error = str(exc)
+        model_load_error = str(e)
         print(f"[CSCAN] ERROR loading model: {model_load_error}")
 
 
