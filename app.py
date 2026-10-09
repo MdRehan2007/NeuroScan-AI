@@ -191,10 +191,10 @@ def load_model():
         model = net
         model_load_error = None
         print(f"[CSCAN] Model loaded successfully on device: {DEVICE}")
-    except Exception as e:
-    model = None
-    model_load_error = f"{type(e).__name__}: {str(e)}"
-    print("MODEL LOAD ERROR:", repr(e))
+        except Exception as e:
+        model = None
+        model_load_error = f"{type(e).__name__}: {str(e)}"
+        print("MODEL LOAD ERROR:", repr(e))
         print(f"[CSCAN] ERROR loading model: {model_load_error}")
 
 
