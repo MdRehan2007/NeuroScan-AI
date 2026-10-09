@@ -27,12 +27,19 @@ from PIL import Image, UnidentifiedImageError
 from models.cscan import CSCAN
 from utils.config import CSCANConfig
 from utils.transforms import get_val_test_transforms
+from explainability.gradcam import generate_gradcam_explanation
+from explainability.gradcam_plus_plus import generate_gradcam_pp_explanation
+from explainability.scorecam import generate_scorecam_explanation
+from explainability.layercam import generate_layercam_explanation
+from explainability.lime_explainer import generate_lime_explanation
+from explainability.shap_explainer import generate_shap_explanation
 
 # -----------------------------------------------------------------------
 # Paths & basic Flask configuration
 # -----------------------------------------------------------------------
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 UPLOAD_FOLDER = os.path.join(BASE_DIR, "static", "uploads")
+EXPLANATIONS_FOLDER = os.path.join(BASE_DIR, "static", "explanations")
 DB_PATH = os.path.join(BASE_DIR, "database.db")
 
 # The trained checkpoint lives at the project root, per the required
@@ -46,6 +53,7 @@ ALLOWED_EXTENSIONS = {"jpg", "jpeg", "png"}
 MAX_CONTENT_LENGTH = 10 * 1024 * 1024  # 10 MB upload limit
 
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+os.makedirs(EXPLANATIONS_FOLDER, exist_ok=True)
 
 app = Flask(__name__)
 app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
@@ -206,7 +214,7 @@ def run_inference(image_path):
     are averaged over the image and its horizontal flip - the same
     test-time augmentation used to produce the reported test metrics.
 
-    Returns (predicted_class_key, confidence_float_0_to_100).
+    Returns (predicted_class_key, class_idx_int, confidence_float, probabilities_dict).
     """
     with open(image_path, "rb") as f:
         img = Image.open(f)
@@ -227,7 +235,15 @@ def run_inference(image_path):
 
     predicted_class = CLASS_NAMES[pred_idx.item()]
     confidence_pct = confidence.item() * 100.0
-    return predicted_class, confidence_pct
+
+    probabilities = {
+        "glioma": round(probs[0, 0].item() * 100.0, 2),
+        "meningioma": round(probs[0, 1].item() * 100.0, 2),
+        "pituitary": round(probs[0, 2].item() * 100.0, 2),
+        "notumor": round(probs[0, 3].item() * 100.0, 2),
+    }
+
+    return predicted_class, pred_idx.item(), confidence_pct, probabilities
 
 
 # -----------------------------------------------------------------------
@@ -274,7 +290,7 @@ def predict():
         return jsonify({"success": False, "error": "Failed to save the uploaded file."}), 500
 
     try:
-        predicted_class, confidence_pct = run_inference(save_path)
+        predicted_class, class_idx, confidence_pct, probabilities = run_inference(save_path)
     except UnidentifiedImageError:
         os.remove(save_path)
         return jsonify({
@@ -298,12 +314,113 @@ def predict():
         traceback.print_exc()
         # Prediction still succeeded even if logging to the DB failed.
 
+    explanations = {}
+    explanation_errors = {}
+
+    # 1. Grad-CAM
+    try:
+        explanations["gradcam"] = generate_gradcam_explanation(
+            model=model, image_path=save_path, class_idx=class_idx,
+            transform=val_test_transform, device=DEVICE, save_dir=EXPLANATIONS_FOLDER
+        )
+        explanation_errors["gradcam"] = None
+    except Exception as e:
+        print("[Grad-CAM Error]:", e)
+        traceback.print_exc()
+        explanations["gradcam"] = None
+        explanation_errors["gradcam"] = "Grad-CAM explanation unavailable."
+
+    # 2. Grad-CAM++
+    try:
+        explanations["gradcampp"] = generate_gradcam_pp_explanation(
+            model=model, image_path=save_path, class_idx=class_idx,
+            transform=val_test_transform, device=DEVICE, save_dir=EXPLANATIONS_FOLDER
+        )
+        explanation_errors["gradcampp"] = None
+    except Exception as e:
+        print("[Grad-CAM++ Error]:", e)
+        traceback.print_exc()
+        explanations["gradcampp"] = None
+        explanation_errors["gradcampp"] = "Grad-CAM++ explanation unavailable."
+
+    # 3. Score-CAM
+    try:
+        explanations["scorecam"] = generate_scorecam_explanation(
+            model=model, image_path=save_path, class_idx=class_idx,
+            transform=val_test_transform, device=DEVICE, save_dir=EXPLANATIONS_FOLDER
+        )
+        explanation_errors["scorecam"] = None
+    except Exception as e:
+        print("[Score-CAM Error]:", e)
+        traceback.print_exc()
+        explanations["scorecam"] = None
+        explanation_errors["scorecam"] = "Score-CAM explanation unavailable."
+
+    # 4. Layer-CAM
+    try:
+        explanations["layercam"] = generate_layercam_explanation(
+            model=model, image_path=save_path, class_idx=class_idx,
+            transform=val_test_transform, device=DEVICE, save_dir=EXPLANATIONS_FOLDER
+        )
+        explanation_errors["layercam"] = None
+    except Exception as e:
+        print("[Layer-CAM Error]:", e)
+        traceback.print_exc()
+        explanations["layercam"] = None
+        explanation_errors["layercam"] = "Layer-CAM explanation unavailable."
+
+    # 5. LIME
+    try:
+        explanations["lime"] = generate_lime_explanation(
+            model=model, image_path=save_path, class_idx=class_idx,
+            transform=val_test_transform, device=DEVICE, save_dir=EXPLANATIONS_FOLDER,
+            num_samples=100
+        )
+        explanation_errors["lime"] = None
+    except Exception as e:
+        print("[LIME Error]:", e)
+        traceback.print_exc()
+        explanations["lime"] = None
+        explanation_errors["lime"] = "LIME explanation unavailable."
+
+    # 6. SHAP
+    try:
+        explanations["shap"] = generate_shap_explanation(
+            model=model, image_path=save_path, class_idx=class_idx,
+            transform=val_test_transform, device=DEVICE, save_dir=EXPLANATIONS_FOLDER,
+            num_samples=80
+        )
+        explanation_errors["shap"] = None
+    except Exception as e:
+        print("[SHAP Error]:", e)
+        traceback.print_exc()
+        explanations["shap"] = None
+        explanation_errors["shap"] = "SHAP explanation unavailable."
+
+    summary = (
+        f"CSCAN predicted {display_name} ({round(confidence_pct, 1)}%). "
+        f"Probabilities: Glioma ({probabilities['glioma']}%), Meningioma ({probabilities['meningioma']}%), "
+        f"Pituitary ({probabilities['pituitary']}%), No Tumor ({probabilities['notumor']}%)."
+    )
+
     return jsonify({
         "success": True,
         "prediction": display_name,
         "confidence": round(confidence_pct, 2),
+        "probabilities": probabilities,
+        "summary": summary,
         "filename": unique_name,
         "image_url": url_for("static", filename=f"uploads/{unique_name}"),
+        "gradcam_url": explanations["gradcam"],
+        "gradcampp_url": explanations["gradcampp"],
+        "scorecam_url": explanations["scorecam"],
+        "layercam_url": explanations["layercam"],
+        "lime_url": explanations["lime"],
+        "shap_url": explanations["shap"],
+        "explanations": explanations,
+        "explanation_errors": explanation_errors,
+        "gradcam_error": explanation_errors["gradcam"],
+        "lime_error": explanation_errors["lime"],
     })
 
 

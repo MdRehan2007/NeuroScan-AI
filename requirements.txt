@@ -6,3 +6,6 @@ numpy
 opencv-python
 Pillow
 gunicorn
+lime
+scikit-image
+shap
