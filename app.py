@@ -34,6 +34,10 @@ from explainability.layercam import generate_layercam_explanation
 from explainability.lime_explainer import generate_lime_explanation
 from explainability.shap_explainer import generate_shap_explanation
 
+from flask import Flask
+
+app = Flask(__name__)
+
 # -----------------------------------------------------------------------
 # Paths & basic Flask configuration
 # -----------------------------------------------------------------------
