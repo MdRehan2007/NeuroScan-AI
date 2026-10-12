@@ -7,7 +7,7 @@ venv/
 __pycache__/
 *.py[cod]
 
-# Model checkpoints (store separately)
+# Model checkpoints
 *.pth
 *.pt
 *.ckpt
@@ -19,13 +19,13 @@ __pycache__/
 # Local database
 database.db
 
-# User uploads and generated explanations
+# Uploaded images and generated explanations
 static/uploads/*
 static/explanations/*
 
-# Generated training results
+# Generated results
 results/
 
-# OS/editor files
-.DS_Store
+# Editor and OS files
 .vscode/
+.DS_Store
