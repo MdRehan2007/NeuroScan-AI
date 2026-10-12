@@ -59,7 +59,7 @@ class CSCANConfig:
     # (models/pretrained_backbones.py) instead of training from scratch.
     # On a ~5,600-image dataset this is the single biggest lever for closing
     # the gap toward high accuracy. Default: True.
-    PRETRAINED = True
+    PRETRAINED = False
 
     # Number of leading backbone stages to freeze when PRETRAINED=True.
     # 0 = fine-tune everything. 1-2 = freeze the stem/early stages (which
